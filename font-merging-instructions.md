@@ -1,0 +1,34 @@
+See the forum post for more information. These instructions have been written with Asheville Sans 14 Light/Bold and Ayu 18 specifically in mind. You're welcome to experiment with other fonts, but you may have to spend a while trying different settings and tuning your procedures, especially if you want 100% accuracy to a particular font. You can find my premade versions [here](Asheville%20Ayu/).
+
+## Links:
+- Asheville Sans 14 Light and Asheville Sans 14 Bold from the Playdate SDK (Resources/Fonts/Asheville)
+- JF-Dot-Ayu18.ttf from http://jikasei.me/font/jf-dotfont/ or the [PDFontConvert GitHub page](https://github.com/hunterbridges/PDFontConvert/tree/master/ttf)
+- PDFontTool from https://github.com/abenokobo/PDFontTool
+- Tophat from https://kaasiand.cool/tophat/
+- Bits'N'Picas from https://github.com/kreativekorp/bitsnpicas
+- [`reset_fnt_tracking.py`](reset_fnt_tracking.py)
+
+## Instructions:
+1. Use PDFontTool to convert Ayu to the Playdate format. We want to recalculate character width with no margins, as we'll set the tracking (space between characters) value at the very end. \
+Example: `.\pdft.exe -R -ma 0 -mo 0 '.\Bitmap fonts\JF-Dot-Ayu18.ttf' .\JF-Dot-Ayu18-nm 18`
+2. Open the converted Ayu .fnt in Tophat by clicking 'New...', then 'Open .fnt file'. Once opened, click 'Resize font', and add 2 pixels both downwards and to the right. We want to have the same grid size as Asheville (20). Ensure that 'Tracking' (in the 'Font preview' section) is set to 0, then export to .fnt + .png. (I'm unsure if resizing before loading the font into Bits'N'Picas is entirely necessary, but we needed to re-export the converted font anyway, because Bits'N'Picas incorrectly parses fonts saved by PDFontTool).
+3. Since Ayu doesn't have a bold variant, we need to make our own, to match Asheville's bold variant. With the resized font still open in Tophat, click 'Outline font', then click 'Bold strokes'. To ensure that character positioning remains uniform, disable 'Expand canvas where needed'. This will result in the tops of some characters being slightly cut off. If you only want to bold some characters (for example, non-Japanese characters), then enable 'Only apply to selected glyphs'. Once finished, export to .fnt + .png.
+4. Make a copy of Asheville Light and Asheville Bold. Open the .fnt files in a text editor (avoid Windows Notepad, as it seemed to cause errors with `pdc`) and change `tracking` to 0. We want all `tracking` values to be zero, otherwise Bits'N'Picas will bake the tracking into the glyph widths.
+5. Open the copy of Asheville Light in Bits'N'Picas, by clicking File->Open in the menu bar, and selecting the .fnt file. Once open, in the character category list on the left side of the window, select 'All Glyphs in Font'.
+6. Open the resized copy of Ayu in Bits'N'Picas. Select 'All Glyphs in Font'.
+7. In the Asheville window, click on the first character (the space), then while holding shift, click on the second to last character in the third row (the tilde). With the characters now selected, press Ctrl+C to copy. In the Ayu window, click on the first character, and press Ctrl+V to paste.
+8. In Ayu, the yen symbol is in the spot for the backslash, and vice versa. We've already overwritten the backslash slot with the proper character in the last step, but we need to overwrite the yen as well. Copy the symbol from Asheville, find the appropriate spot in Ayu (it should incorrectly have a backslash in it), then paste.
+9. In the Ayu window, select all of the pasted characters, and press Ctrl+Shift+Up to move characters up 2 times. Double click on the 'e' and 'è', and confirm that the bottom of each character is at the same vertical height. If not, then reselect the pasted characters, and make adjustments with Ctrl+Shift+Up and Ctrl+Shift+Down.
+10. Close the window for 'è'. Switch to the Asheville window, then double click on the 'e'. Compare the Asheville 'e' with the pasted 'e', and if the vertical heights are different, then select all characters in the Ayu window with Ctrl+A and make adjustments. Close both character preview windows when finished.
+11. To export the combined Ayu font, click File->Export, then choose 'Playdate' in the dropdown and select 'Separate (fnt+png)'.
+12. Open the exported .fnt file in a text editor. If `tracking` is a negative number (or if it's greater than zero, I haven't tested), then we'll need to apply the value of `tracking` to all of the character width values and set `tracking` back to 0. If `tracking` is already 0, then you can skip to the next step. I threw together a Python script that can adjust the width values in bulk. To use it, run `python3 reset_fnt_tracking.py exported-font.fnt exported-font.fnt --new-tracking 0` to modify the .fnt file in place, substituting `exported-font.fnt` with the name of the exported font from step 11. If you left your text editor open, then make sure to close and reopen it to see the updated values.
+13. Once `tracking` is 0, we can change it to match the character spacing from Asheville Light. Change `tracking` to the value found in the original Asheville Light .fnt file.
+14. Test the finished font in a Playdate app. To use the test app included with PDFontTool, add the desired fonts to `Source/fonts` and run `pdc Source PDFontTool` to create `PDFontTool.pdx`. If your goal is to match the original Asheville font in formatting, then I suggest comparing the finished font against the original with screenshots.
+15. Repeat steps 5-14, instead using Asheville Bold and the Ayu Bold variant we created in step 3.
+
+You're finished! You can now clean up any unnecessary files, and load the finished fonts into your program. If all went to plan, you should have pixel-perfect drop-in replacements for Asheville and Asheville Bold.
+
+### Additional thoughts about tracking:
+We want tracking to remain zero throughout the process so we can easily adjust the tracking of all characters at the very end to match the respective Asheville values. In theory, instead of changing the margins of Asheville and Asheville Bold, you could run PDFontTool twice, baking in the margins from Asheville and Asheville Bold. That way, you wouldn't have to edit the tracking at the end, but I think this would also make the finished fonts harder to edit, as now the tracking is baked into the glyph widths.
+
+Regardless of whether you set tracking at the end or bake it in at the start, Bits'N'Picas will sometimes make `tracking` a negative value and offset all widths by that value. I don't know why it does this. While it doesn't seem to impact rendering negatively, it does seem to affect Playdate's ability to accurately calculate text width, which is used in functions like `getTextWidth` and `drawTextInRect`. The calculated text width seems to be off by the value of `tracking` in pixels. If this isn't important to you, and you chose to bake in tracking earlier, then you could skip step 12 (and 13).
