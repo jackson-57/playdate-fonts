@@ -1,4 +1,4 @@
-See the forum post for more information. These instructions have been written with Asheville Sans 14 Light/Bold and Ayu 18 specifically in mind. You're welcome to experiment with other fonts, but you may have to spend a while trying different settings and tuning your procedures, especially if you want 100% accuracy to a particular font. You can find my premade versions [here](Asheville%20Ayu/).
+See the [forum post](https://devforum.play.date/t/asheville-with-expanded-character-support-and-my-notes-on-combining-fonts/13064) for more information. These instructions have been written with Asheville Sans 14 Light/Bold and Ayu 18 specifically in mind. You're welcome to experiment with other fonts, but you may have to spend a while trying different settings and tuning your procedures, especially if you want 100% accuracy to a particular font. You can find my premade versions [here](Asheville%20Ayu/).
 
 ## Links:
 - Asheville Sans 14 Light and Asheville Sans 14 Bold from the Playdate SDK (Resources/Fonts/Asheville)
